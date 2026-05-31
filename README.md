@@ -29,7 +29,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 {
-  "nothugo/latex-comments.nvim",
+  "HuggoWuggo/latex-comments.nvim",
   build = "npm install",
   lazy = false,
 }
