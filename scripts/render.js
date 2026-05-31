@@ -55,7 +55,7 @@ function toUnicode(mathml) {
         return '√(' + inner + ')';
       }
       default:
-        return children.map(parseNode).join('');
+        return children.map(parseNode).join(' ');
     }
   }
 
