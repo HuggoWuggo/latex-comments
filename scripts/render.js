@@ -1,5 +1,5 @@
 const temml = require('temml');
-const latex = process.argv[2];
+const latex = process.argv[2].replace(/\\:/g, ' ');
 if (!latex) process.exit(1);
 
 const { JSDOM } = require('jsdom');
@@ -11,7 +11,7 @@ function toUnicode(mathml) {
     'k':'ᵏ','l':'ˡ','m':'ᵐ','n':'ⁿ','o':'ᵒ','p':'ᵖ','r':'ʳ','s':'ˢ','t':'ᵗ','u':'ᵘ',
     'v':'ᵛ','w':'ʷ','x':'ˣ','y':'ʸ','z':'ᶻ',
     '+':'⁺','-':'⁻','=':'⁼','(':'⁽',')':'⁾',
-    'π':'^π',  // no pi superscript exists, best approximation
+    'π':'^π ',  // no pi superscript exists, best approximation
   };
 
   const sub_map = {
@@ -20,7 +20,7 @@ function toUnicode(mathml) {
     'k':'ₖ','l':'ₗ','m':'ₘ','n':'ₙ','o':'ₒ','p':'ₚ','r':'ᵣ','s':'ₛ','t':'ₜ','u':'ᵤ',
     'v':'ᵥ','w':'ᵥᵥ','x':'ₓ','y':'ᵧ','z':'₂',
     '+':'₊','-':'₋','=':'₌',
-    'π':'_π',  // no pi subscript exists, leave as-is
+    'π':'_π ',  // no pi subscript exists, leave as-is
   };
 
   function applyMap(str, map) {
@@ -36,11 +36,11 @@ function toUnicode(mathml) {
     switch(tag) {
       case 'msup': {
         const [base, exp] = children.filter(c => c.nodeType === 1);
-        return parseNode(base) + applyMap(parseNode(exp), sup_map);
+        return parseNode(base) + applyMap(parseNode(exp), sup_map) + '';
       }
       case 'msub': {
         const [base, sub] = children.filter(c => c.nodeType === 1);
-        return parseNode(base) + applyMap(parseNode(sub), sub_map);
+        return parseNode(base) + applyMap(parseNode(sub), sub_map) + '';
       }
       case 'msubsup': {
         const [base, sub, sup] = children.filter(c => c.nodeType === 1);
@@ -55,13 +55,13 @@ function toUnicode(mathml) {
         return '√(' + inner + ')';
       }
       default:
-        return children.map(parseNode).join(' ');
+        return children.map(parseNode).join('');
     }
   }
 
   const dom = new JSDOM(mathml, { contentType: 'text/xml' });
   const root = dom.window.document.querySelector('math');
-  return parseNode(root);
+  return parseNode(root).trim();
 }
 
 const mathml = temml.renderToString(latex, {});
