@@ -3,3 +3,9 @@ package-lock.json
 vscode/node_modules/
 vscode/out/
 vscode/.vscode-test/
+.vscode/
+eslint.config.mjs
+vscode/.vscode-test.mjs
+vscode/.vscodeignore
+vscode/CHANGELOG.md
+vscode/src/test/extension.test.ts
