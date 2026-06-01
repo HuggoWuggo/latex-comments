@@ -15,33 +15,73 @@ local color_map = {
 
 function M.render()
   vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+
+  local cs = vim.bo.commentstring
+  if not cs or cs == "" then return end
+  local comment_prefix = cs:match("(.-)%s*%%s")
+  if not comment_prefix or comment_prefix == "" then return end
+  local comment = comment_prefix:gsub("%p", "%%%1")
+
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
   for i, line in ipairs(lines) do
-    -- local latex = line:match("//!%s*%$(.-)%$")
-    -- local comment = vim.bo.commentstring:match("(.-)%s*%%s"):gsub("%p", "%%%1")
-    local comment = vim.bo.commentstring:match("(.-)%s*%%s"):gsub("%p", "%%%1")
     local color, latex = line:match(comment .. "!(%w*)%s*%$(.-)%$")
-    
     local hl_group = "LatexComment"
     if color and color_map[color] then
       local group_name = "LatexComment_" .. color
       vim.api.nvim_set_hl(0, group_name, { fg = color_map[color] })
       hl_group = group_name
     end
-    
-    if latex then
-      vim.system({"node", script, latex}, {text = true}, function (result)
-        local unicode = result.stdout:gsub("%s+$", "")
 
-        vim.schedule(function ()
-          vim.api.nvim_buf_set_extmark(0, ns, i-1, 0, {
+    if latex then
+      vim.system({"node", script, latex}, {text = true}, function(result)
+        local unicode = result.stdout:gsub("%s+$", "")
+        vim.schedule(function()
+          vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
             virt_text = {{unicode, hl_group}},
-            virt_text_pos = "eol"
+            virt_text_pos = "eol",
           })
         end)
       end)
     end
   end
 end
+
+-- function M.render()
+--   vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+--   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+--   for i, line in ipairs(lines) do
+--     -- local latex = line:match("//!%s*%$(.-)%$")
+--     -- local comment = vim.bo.commentstring:match("(.-)%s*%%s"):gsub("%p", "%%%1")
+--
+--     local cs = vim.bo.commentstring
+--     if not cs or cs == "" then return end
+--
+--     local comment_prefix = cs:match("(.-)%s*%%s")
+--     if not comment_prefix or comment_prefix == "" then return end
+--
+--     local comment = comment_prefix:gsub("%p", "%%%1")
+--     local color, latex = line:match(comment .. "!(%w*)%s*%$(.-)%$")
+--
+--     local hl_group = "LatexComment"
+--     if color and color_map[color] then
+--       local group_name = "LatexComment_" .. color
+--       vim.api.nvim_set_hl(0, group_name, { fg = color_map[color] })
+--       hl_group = group_name
+--     end
+--
+--     if latex then
+--       vim.system({"node", script, latex}, {text = true}, function (result)
+--         local unicode = result.stdout:gsub("%s+$", "")
+--
+--         vim.schedule(function ()
+--           vim.api.nvim_buf_set_extmark(0, ns, i-1, 0, {
+--             virt_text = {{unicode, hl_group}},
+--             virt_text_pos = "eol"
+--           })
+--         end)
+--       end)
+--     end
+--   end
+-- end
 
 return M
