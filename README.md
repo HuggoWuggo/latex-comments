@@ -29,8 +29,20 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 {
-  "HuggoWuggo/latex-comments.nvim",
+  "HuggoWuggo/latex-comments",
+  name = "latex-comments",
   build = "npm install",
+  config = function()
+    vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/lazy/latex-comments/nvim")
+    vim.schedule(function()
+      vim.api.nvim_create_autocmd({"BufEnter", "BufWritePost"}, {
+        callback = function()
+          require("latex-comments").render()
+        end
+      })
+      require("latex-comments").render()
+    end)
+  end,
   lazy = false,
 }
 ```
