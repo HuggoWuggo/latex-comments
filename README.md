@@ -1,4 +1,4 @@
-# latex-comments.nvim
+# latex-comments
 
 A Neovim plugin that renders LaTeX math expressions in comments as unicode equations inline.
 
