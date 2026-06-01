@@ -31,7 +31,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 {
   "HuggoWuggo/latex-comments",
   name = "latex-comments",
-  build = "npm install",
+  build = "npm install --prefix .",
   config = function()
     vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/lazy/latex-comments/nvim")
     vim.schedule(function()
@@ -44,7 +44,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
     end)
   end,
   lazy = false,
-}
+},
 ```
 
 ## Examples
