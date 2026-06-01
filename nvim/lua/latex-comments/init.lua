@@ -1,7 +1,7 @@
 local M = {}
 
 local ns = vim.api.nvim_create_namespace('latex_comments')
-local script = debug.getinfo(1).source:match("@(.*/)") .. "../../scripts/render.js"
+local script = debug.getinfo(1).source:match("@(.*/)") .. "../../../scripts/render.js"
 
 local color_map = {
   red     = "#ff5555",
