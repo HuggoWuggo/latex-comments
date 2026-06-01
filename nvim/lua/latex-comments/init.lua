@@ -18,6 +18,7 @@ function M.render()
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
   for i, line in ipairs(lines) do
     -- local latex = line:match("//!%s*%$(.-)%$")
+    -- local comment = vim.bo.commentstring:match("(.-)%s*%%s"):gsub("%p", "%%%1")
     local comment = vim.bo.commentstring:match("(.-)%s*%%s"):gsub("%p", "%%%1")
     local color, latex = line:match(comment .. "!(%w*)%s*%$(.-)%$")
     
