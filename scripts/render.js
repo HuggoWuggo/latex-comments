@@ -5,6 +5,7 @@ if (!latex) process.exit(1);
 const { JSDOM } = require('jsdom');
 
 function toUnicode(mathml) {
+  mathml = mathml.replace(/[\u2061\u2062\u2063\u2064]/g, '');
   const sup_map = {
     '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹',
     'a':'ᵃ','b':'ᵇ','c':'ᶜ','d':'ᵈ','e':'ᵉ','f':'ᶠ','g':'ᵍ','h':'ʰ','i':'ⁱ','j':'ʲ',
@@ -34,17 +35,37 @@ function toUnicode(mathml) {
     if (node.nodeType === 3) return node.textContent; // text node
 
     switch(tag) {
-      case 'msup': {
-        const [base, exp] = children.filter(c => c.nodeType === 1);
-        return parseNode(base) + applyMap(parseNode(exp), sup_map) + '';
-      }
+      // case 'msup': {
+      //   const [base, exp] = children.filter(c => c.nodeType === 1);
+      //   return parseNode(base) + applyMap(parseNode(exp), sup_map) + '';
+      // }
+      // case 'msub': {
+      //   const [base, sub] = children.filter(c => c.nodeType === 1);
+      //   return parseNode(base) + applyMap(parseNode(sub), sub_map) + '';
+      // }
+      // case 'msubsup': {
+      //   const [base, sub, sup] = children.filter(c => c.nodeType === 1);
+      //   return parseNode(base) + applyMap(parseNode(sub), sub_map) + applyMap(parseNode(sup), sup_map);
+      // }
       case 'msub': {
         const [base, sub] = children.filter(c => c.nodeType === 1);
-        return parseNode(base) + applyMap(parseNode(sub), sub_map) + '';
+        const subText = parseNode(sub);
+        const mapped = subText.length === 1 ? applyMap(subText, sub_map) : `(${subText})`;
+        return parseNode(base) + mapped;
+      }
+      case 'msup': {
+        const [base, exp] = children.filter(c => c.nodeType === 1);
+        const expText = parseNode(exp);
+        const mapped = expText.length === 1 ? applyMap(expText, sup_map) : `(${expText})`;
+        return parseNode(base) + mapped;
       }
       case 'msubsup': {
         const [base, sub, sup] = children.filter(c => c.nodeType === 1);
-        return parseNode(base) + applyMap(parseNode(sub), sub_map) + applyMap(parseNode(sup), sup_map);
+        const subText = parseNode(sub);
+        const supText = parseNode(sup);
+        const mappedSub = subText.length === 1 ? applyMap(subText, sub_map) : `(${subText})`;
+        const mappedSup = supText.length === 1 ? applyMap(supText, sup_map) : `(${supText})`;
+        return parseNode(base) + mappedSub + mappedSup;
       }
       case 'mfrac': {
         const [num, den] = children.filter(c => c.nodeType === 1);
